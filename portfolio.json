@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "orbit-station-ryan-vo",
+  "owner": "A220man",
+  "email": "ryandtvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: orbit-station-ryan-vo",
+  "workflows": [
+    "Operator coverage audit and gap analysis across MPS, Vulkan, and CPU execution backends",
+    "Dynamic execution latency, throughput, and memory scaling benchmark evaluation",
+    "Hardware target compatibility matrix simulation with rule-based fallback and opt-in advisory analysis"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
