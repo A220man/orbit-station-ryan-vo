@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "current_feature": "backend-core-engine",
+  "features": [
+    {
+      "id": "foundation-and-metadata",
+      "title": "Project scaffolding, packaging, and CI configuration",
+      "status": "done",
+      "acceptance": [
+        "Repository includes portfolio.json, pyproject.toml, LICENSE, README, .gitignore, compose.yaml, and CI workflows.",
+        "Preflight validation recognises project layout and metadata."
+      ],
+      "implementation": [
+        "portfolio.json",
+        "pyproject.toml",
+        "compose.yaml",
+        ".github/workflows/ci.yml"
+      ],
+      "tests": [
+        "backend/tests/test_config.py"
+      ]
+    },
+    {
+      "id": "backend-core-engine",
+      "title": "Substantive ML execution and operator coverage engine with SQLite persistence",
+      "status": "in_progress",
+      "acceptance": [
+        "FastAPI backend with models, database repository, and deterministic operator analysis engine.",
+        "Supports MPS, Vulkan, CPU, and CUDA operator catalog with capability querying and fallback resolution.",
+        "Workload execution planner and telemetry benchmark simulation.",
+        "At least 12 comprehensive unit and integration tests passing."
+      ],
+      "implementation": [
+        "backend/app/main.py",
+        "backend/app/core/config.py",
+        "backend/app/core/security.py",
+        "backend/app/models/database.py",
+        "backend/app/services/operator_catalog.py",
+        "backend/app/services/benchmark_engine.py",
+        "backend/app/services/workload_planner.py",
+        "backend/app/services/llm_advisory.py",
+        "backend/app/api/endpoints.py"
+      ],
+      "tests": [
+        "backend/tests/test_api.py",
+        "backend/tests/test_engine.py",
+        "backend/tests/test_auth.py"
+      ]
+    },
+    {
+      "id": "frontend-dashboard",
+      "title": "React + TypeScript dashboard for operator coverage and benchmark simulation",
+      "status": "planned",
+      "acceptance": [
+        "Vite + React SPA with typed API client, responsive layout, and distinct domain components.",
+        "Interactive coverage matrix, workload planner runner, and exportable reports.",
+        "Typecheck and tests pass cleanly."
+      ],
+      "implementation": [
+        "frontend/src/App.tsx",
+        "frontend/src/api/client.ts",
+        "frontend/src/components/CoverageMatrix.tsx",
+        "frontend/src/components/BenchmarkRunner.tsx",
+        "frontend/src/components/WorkloadPlannerView.tsx"
+      ],
+      "tests": [
+        "frontend/src/App.test.tsx"
+      ]
+    }
+  ]
+}
