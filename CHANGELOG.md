@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.0.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -20,3 +24,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-provider LLM advisory adapter support (OpenAI-compatible, Anthropic, Gemini, Ollama) with strict offline fallbacks.
 - React + TypeScript dashboard with interactive operator matrix, benchmark runner, and report export.
 - Complete Docker and Docker Compose environment with health checks and Keycloak SSO configuration.
+
+### Updated

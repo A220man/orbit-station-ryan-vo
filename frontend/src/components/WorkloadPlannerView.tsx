@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createWorkloadPlan, fetchAdvisory, WorkloadPlan, AdvisoryResponse } from '../api/client';
+import { createWorkloadPlan, fetchAdvisory, WorkloadPlan, AdvisoryResponse, exportPlans, downloadBlob } from '../api/client';
 
 export const WorkloadPlannerView: React.FC = () => {
   const [title, setTitle] = useState('ResNet50-Vulkan-Port');
@@ -87,11 +87,41 @@ export const WorkloadPlannerView: React.FC = () => {
       {plan && (
         <div style={{ background: '#0f172a', padding: '1.25rem', borderRadius: '0.5rem', border: '1px solid var(--border-color)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <div>
-              <h3 style={{ margin: 0 }}>Plan: {plan.title}</h3>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                Target: {plan.target_backend.toUpperCase()} | Coverage Score: <strong>{plan.coverage_score}%</strong>
-              </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0 }}>Plan: {plan.title}</h3>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  Target: {plan.target_backend.toUpperCase()} | Coverage Score: <strong>{plan.coverage_score}%</strong>
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  onClick={async () => {
+                    try {
+                      const blob = await exportPlans('json');
+                      downloadBlob(blob, 'workload_plans.json');
+                    } catch (err) {
+                      console.error('Export failed:', err);
+                    }
+                  }}
+                  style={{ background: '#334155', color: '#f8fafc', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.85rem' }}
+                >
+                  Export JSON
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      const blob = await exportPlans('csv');
+                      downloadBlob(blob, 'workload_plans.csv');
+                    } catch (err) {
+                      console.error('Export failed:', err);
+                    }
+                  }}
+                  style={{ background: '#334155', color: '#f8fafc', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.85rem' }}
+                >
+                  Export CSV
+                </button>
+              </div>
             </div>
             <button onClick={handleFetchAdvisory} disabled={advisoryLoading} style={{ background: '#334155', color: '#f8fafc' }}>
               {advisoryLoading ? 'Evaluating...' : 'Get Opt-In Advisory'}
