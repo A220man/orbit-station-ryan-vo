@@ -36,7 +36,7 @@ Tests: `backend/tests/test_api.py`, `backend/tests/test_engine.py`, `backend/tes
 
 ### frontend-dashboard — React + TypeScript dashboard for operator coverage and benchmark simulation
 
-Status: planned
+Status: done
 
 Acceptance:
 - Vite + React SPA with typed API client, responsive layout, and distinct domain components.

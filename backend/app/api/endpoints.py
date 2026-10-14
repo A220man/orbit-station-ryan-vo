@@ -2,6 +2,10 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+from fastapi.responses import StreamingResponse
+import io
+import csv
+import json
 
 from app.models.database import get_db, OperatorRecord, BenchmarkRecord, WorkloadPlanRecord, AuditLogRecord
 from app.core.security import get_current_user, require_role, UserToken
@@ -71,6 +75,41 @@ def list_operators(
         query = query.filter(OperatorRecord.op_name.contains(search))
     return query.offset(offset).limit(limit).all()
 
+@router.get("/operators/export")
+def export_operators(
+    format: str = Query("json", pattern="^(json|csv)$"),
+    db: Session = Depends(get_db),
+    user: UserToken = Depends(get_current_user)
+):
+    operators = db.query(OperatorRecord).all()
+    data = [
+        {
+            "op_name": o.op_name,
+            "category": o.category,
+            "mps_status": o.mps_status,
+            "vulkan_status": o.vulkan_status,
+            "cpu_status": o.cpu_status,
+            "cuda_status": o.cuda_status,
+            "notes": o.notes,
+        }
+        for o in operators
+    ]
+    if format == "csv":
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=data[0].keys() if data else [])
+        writer.writeheader()
+        writer.writerows(data)
+        return StreamingResponse(
+            io.BytesIO(output.getvalue().encode()),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=operators.csv"}
+        )
+    return StreamingResponse(
+        io.BytesIO(json.dumps(data, indent=2).encode()),
+        media_type="application/json",
+        headers={"Content-Disposition": "attachment; filename=operators.json"}
+    )
+
 @router.post("/operators", response_model=OperatorResponse, status_code=status.HTTP_201_CREATED)
 def add_operator(
     req: CreateOperatorRequest,
@@ -132,6 +171,46 @@ def list_benchmark_history(
 ):
     return db.query(BenchmarkRecord).order_by(BenchmarkRecord.id.desc()).limit(limit).all()
 
+@router.get("/benchmarks/export")
+def export_benchmarks(
+    format: str = Query("json", pattern="^(json|csv)$"),
+    limit: int = Query(1000, ge=1, le=10000),
+    db: Session = Depends(get_db),
+    user: UserToken = Depends(require_role("viewer"))
+):
+    records = db.query(BenchmarkRecord).order_by(BenchmarkRecord.id.desc()).limit(limit).all()
+    data = [
+        {
+            "id": r.id,
+            "workload_name": r.workload_name,
+            "backend": r.backend,
+            "batch_size": r.batch_size,
+            "mean_latency_ms": r.mean_latency_ms,
+            "p95_latency_ms": r.p95_latency_ms,
+            "throughput_samples_per_sec": r.throughput_samples_per_sec,
+            "peak_memory_mb": r.peak_memory_mb,
+            "replicated_memory_detected": r.replicated_memory_detected,
+            "executed_by": r.executed_by,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in records
+    ]
+    if format == "csv":
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=data[0].keys() if data else [])
+        writer.writeheader()
+        writer.writerows(data)
+        return StreamingResponse(
+            io.BytesIO(output.getvalue().encode()),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=benchmarks.csv"}
+        )
+    return StreamingResponse(
+        io.BytesIO(json.dumps(data, indent=2).encode()),
+        media_type="application/json",
+        headers={"Content-Disposition": "attachment; filename=benchmarks.json"}
+    )
+
 @router.post("/plans/create")
 def create_workload_plan(
     req: CreatePlanRequest,
@@ -153,6 +232,43 @@ def list_plans(
     user: UserToken = Depends(require_role("viewer"))
 ):
     return db.query(WorkloadPlanRecord).order_by(WorkloadPlanRecord.id.desc()).limit(limit).all()
+
+@router.get("/plans/export")
+def export_plans(
+    format: str = Query("json", pattern="^(json|csv)$"),
+    limit: int = Query(1000, ge=1, le=10000),
+    db: Session = Depends(get_db),
+    user: UserToken = Depends(require_role("viewer"))
+):
+    records = db.query(WorkloadPlanRecord).order_by(WorkloadPlanRecord.id.desc()).limit(limit).all()
+    data = [
+        {
+            "id": r.id,
+            "title": r.title,
+            "target_backend": r.target_backend,
+            "operators_json": r.operators_json,
+            "coverage_score": r.coverage_score,
+            "fallback_ops_json": r.fallback_ops_json,
+            "created_by": r.created_by,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in records
+    ]
+    if format == "csv":
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=data[0].keys() if data else [])
+        writer.writeheader()
+        writer.writerows(data)
+        return StreamingResponse(
+            io.BytesIO(output.getvalue().encode()),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=workload_plans.csv"}
+        )
+    return StreamingResponse(
+        io.BytesIO(json.dumps(data, indent=2).encode()),
+        media_type="application/json",
+        headers={"Content-Disposition": "attachment; filename=workload_plans.json"}
+    )
 
 @router.post("/advisory/analyze")
 def run_advisory(

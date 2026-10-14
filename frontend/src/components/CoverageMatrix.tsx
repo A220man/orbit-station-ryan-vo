@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { OperatorResponse, CoverageResponse } from '../api/client';
+import { exportOperators, downloadBlob } from '../api/client';
 
 interface Props {
   operators: OperatorResponse[];
@@ -46,6 +47,32 @@ export const CoverageMatrix: React.FC<Props> = ({
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <button
+            onClick={async () => {
+              try {
+                const blob = await exportOperators('json');
+                downloadBlob(blob, 'operators.json');
+              } catch (err) {
+                console.error('Export failed:', err);
+              }
+            }}
+            style={{ background: '#334155', color: '#f8fafc', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.85rem' }}
+          >
+            Export JSON
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                const blob = await exportOperators('csv');
+                downloadBlob(blob, 'operators.csv');
+              } catch (err) {
+                console.error('Export failed:', err);
+              }
+            }}
+            style={{ background: '#334155', color: '#f8fafc', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.85rem' }}
+          >
+            Export CSV
+          </button>
           <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Target Backend:</label>
           <select value={selectedBackend} onChange={(e) => onSelectBackend(e.target.value)}>
             <option value="mps">Apple Silicon (MPS)</option>

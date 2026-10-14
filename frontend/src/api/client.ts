@@ -109,3 +109,32 @@ export async function fetchAdvisory(plan_id: number): Promise<AdvisoryResponse> 
   if (!res.ok) throw new Error('Failed to fetch advisory report');
   return res.json();
 }
+
+export async function exportOperators(format: 'json' | 'csv' = 'json'): Promise<Blob> {
+  const res = await fetch(`${API_BASE}/operators/export?format=${format}`);
+  if (!res.ok) throw new Error('Failed to export operators');
+  return res.blob();
+}
+
+export async function exportBenchmarks(format: 'json' | 'csv' = 'json'): Promise<Blob> {
+  const res = await fetch(`${API_BASE}/benchmarks/export?format=${format}`);
+  if (!res.ok) throw new Error('Failed to export benchmarks');
+  return res.blob();
+}
+
+export async function exportPlans(format: 'json' | 'csv' = 'json'): Promise<Blob> {
+  const res = await fetch(`${API_BASE}/plans/export?format=${format}`);
+  if (!res.ok) throw new Error('Failed to export workload plans');
+  return res.blob();
+}
+
+export function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}

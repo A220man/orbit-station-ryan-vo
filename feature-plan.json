@@ -50,7 +50,7 @@
     {
       "id": "frontend-dashboard",
       "title": "React + TypeScript dashboard for operator coverage and benchmark simulation",
-      "status": "planned",
+      "status": "done",
       "acceptance": [
         "Vite + React SPA with typed API client, responsive layout, and distinct domain components.",
         "Interactive coverage matrix, workload planner runner, and exportable reports.",

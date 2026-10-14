@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { runBenchmark, BenchmarkResult } from '../api/client';
+import { runBenchmark, BenchmarkResult, exportBenchmarks, downloadBlob } from '../api/client';
 
 export const BenchmarkRunner: React.FC = () => {
   const [workloadName, setWorkloadName] = useState('Transformer-Attention-Layer');
@@ -30,6 +30,35 @@ export const BenchmarkRunner: React.FC = () => {
       <p style={{ color: 'var(--text-muted)' }}>
         Simulates runtime latency distributions, throughput scaling, and DataLoader worker memory overhead.
       </p>
+
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', alignItems: 'center' }}>
+        <button
+          onClick={async () => {
+            try {
+              const blob = await exportBenchmarks('json');
+              downloadBlob(blob, 'benchmarks.json');
+            } catch (err) {
+              console.error('Export failed:', err);
+            }
+          }}
+          style={{ background: '#334155', color: '#f8fafc', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.85rem' }}
+        >
+          Export History JSON
+        </button>
+        <button
+          onClick={async () => {
+            try {
+              const blob = await exportBenchmarks('csv');
+              downloadBlob(blob, 'benchmarks.csv');
+            } catch (err) {
+              console.error('Export failed:', err);
+            }
+          }}
+          style={{ background: '#334155', color: '#f8fafc', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.85rem' }}
+        >
+          Export History CSV
+        </button>
+      </div>
 
       <form onSubmit={handleExecute} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         <div>
