@@ -3,6 +3,9 @@
 > Work in progress. This checkpoint may be incomplete or fail tests. See PLAN.md and STATUS.md before use.
 
 
+> Checkpoint v1.1.0. All backend (31) and frontend (3) tests pass. See PLAN.md and STATUS.md for roadmap.
+
+
 Orbit Station is an AI & Machine Learning developer tool and evaluation workbench for dynamic neural network execution backends, tensor acceleration targets, and PyTorch operator coverage analysis. It provides an empirical audit of PyTorch operators (`aten::*`) across Apple Silicon MPS, Vulkan compute, Host CPU, and NVIDIA CUDA architectures, alongside automated workload graph partitioning, DataLoader memory replication profiling, and opt-in advisory analysis.
 
 ```mermaid

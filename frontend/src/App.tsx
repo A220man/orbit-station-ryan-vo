@@ -45,7 +45,7 @@ export const App: React.FC = () => {
           <div style={{ textAlign: 'right' }}>
             <span className="badge badge-supported">Demo Mode: Active</span>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-              v1.0.0 &bull; OIDC Ready
+              v1.1.0 &bull; OIDC Ready
             </div>
           </div>
         </div>

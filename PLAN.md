@@ -22,7 +22,7 @@ Tests: `backend/tests/test_config.py`
 
 ### backend-core-engine — Substantive ML execution and operator coverage engine with SQLite persistence
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - FastAPI backend with models, database repository, and deterministic operator analysis engine.

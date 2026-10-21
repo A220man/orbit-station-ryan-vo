@@ -1,9 +1,13 @@
 {
   "name": "orbit-station-ryan-vo",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
-  "author": "Ryan Vo <ryandtvo@gmail.com>",
+  "author": {
+    "name": "Ryan Vo",
+    "email": "ryandtvo@gmail.com",
+    "url": "https://github.com/A220man"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
