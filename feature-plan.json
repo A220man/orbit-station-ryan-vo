@@ -23,7 +23,7 @@
     {
       "id": "backend-core-engine",
       "title": "Substantive ML execution and operator coverage engine with SQLite persistence",
-      "status": "in_progress",
+      "status": "done",
       "acceptance": [
         "FastAPI backend with models, database repository, and deterministic operator analysis engine.",
         "Supports MPS, Vulkan, CPU, and CUDA operator catalog with capability querying and fallback resolution.",

@@ -23,7 +23,7 @@ def create_app() -> FastAPI:
     application = FastAPI(
         title=settings.app_name,
         description="Orbit Station: dynamic neural networks and tensor execution backend evaluation platform",
-        version="1.0.0",
+        version="1.1.0",
         lifespan=lifespan
     )
 
@@ -41,7 +41,7 @@ def create_app() -> FastAPI:
             "status": "healthy",
             "environment": settings.environment,
             "demo_mode": settings.demo_mode,
-            "version": "1.0.0"
+            "version": "1.1.0"
         }
 
     application.include_router(api_router, prefix="/api")
