@@ -68,7 +68,7 @@ def list_operators(
     db: Session = Depends(get_db),
     user: UserToken = Depends(require_role("viewer"))
 ):
-    query = db.query(OperatorRecord)
+    query = db.query(OperatorRecord).order_by(OperatorRecord.id)
     if category:
         query = query.filter(OperatorRecord.category == category)
     if search:
@@ -81,7 +81,7 @@ def export_operators(
     db: Session = Depends(get_db),
     user: UserToken = Depends(get_current_user)
 ):
-    operators = db.query(OperatorRecord).all()
+    operators = db.query(OperatorRecord).order_by(OperatorRecord.id).all()
     data = [
         {
             "op_name": o.op_name,
