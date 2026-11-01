@@ -36,6 +36,14 @@ class CreateOperatorRequest(BaseModel):
     cuda_status: str = "supported"
     notes: Optional[str] = ""
 
+class UpdateOperatorRequest(BaseModel):
+    category: Optional[str] = None
+    mps_status: Optional[str] = None
+    vulkan_status: Optional[str] = None
+    cpu_status: Optional[str] = None
+    cuda_status: Optional[str] = None
+    notes: Optional[str] = None
+
 class CoverageResponse(BaseModel):
     backend: str
     total_operators: int
@@ -134,6 +142,30 @@ def add_operator(
         action="OPERATOR_REGISTERED",
         actor=user.username,
         details=f"Registered operator {req.op_name} in category {req.category}."
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(record)
+    return record
+@router.put("/operators/{op_name}", response_model=OperatorResponse)
+def update_operator(
+    op_name: str,
+    req: UpdateOperatorRequest,
+    db: Session = Depends(get_db),
+    user: UserToken = Depends(require_role("operator"))
+):
+    record = db.query(OperatorRecord).filter(OperatorRecord.op_name == op_name).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Operator not found")
+    
+    update_data = req.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(record, field, value)
+    
+    audit = AuditLogRecord(
+        action="OPERATOR_UPDATED",
+        actor=user.username,
+        details=f"Updated operator {op_name} with fields: {', '.join(update_data.keys())}."
     )
     db.add(audit)
     db.commit()

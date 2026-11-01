@@ -389,4 +389,41 @@ def test_advisory_error_handling_on_provider_failure(mock_client_class):
         assert "external service failed" in advisory["disclaimer"].lower()
     finally:
         settings.llm_api_key = original_key
+def test_update_operator_endpoint():
+    import uuid
+    # First create an operator
+    unique_id = uuid.uuid4().hex[:8]
+    new_op = {
+        "op_name": f"aten::update_test_{unique_id}",
+        "category": "test",
+        "mps_status": "missing",
+        "vulkan_status": "missing",
+        "cpu_status": "supported",
+        "cuda_status": "supported",
+        "notes": "Original notes."
+    }
+    res = client.post("/api/operators", json=new_op)
+    assert res.status_code in [200, 201]
+    
+    # Now update it
+    update_data = {
+        "mps_status": "supported",
+        "vulkan_status": "fallback",
+        "notes": "Updated with MPS support."
+    }
+    res = client.put(f"/api/operators/{new_op['op_name']}", json=update_data)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["op_name"] == new_op["op_name"]
+    assert data["mps_status"] == "supported"
+    assert data["vulkan_status"] == "fallback"
+    assert data["notes"] == "Updated with MPS support."
+    # Unchanged fields should remain
+    assert data["cpu_status"] == "supported"
+    assert data["cuda_status"] == "supported"
+    assert data["category"] == "test"
+
+def test_update_operator_not_found():
+    res = client.put("/api/operators/aten::nonexistent_op_12345", json={"mps_status": "supported"})
+    assert res.status_code == 404
 
