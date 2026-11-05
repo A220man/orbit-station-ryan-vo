@@ -184,3 +184,8 @@ def calculate_backend_coverage(db: Session, backend: str) -> Dict[str, Any]:
         "missing": missing_count,
         "coverage_rate": rate
     }
+
+def calculate_all_backends_coverage(db: Session) -> List[Dict[str, Any]]:
+    """Calculate coverage for all supported backends."""
+    backends = ["mps", "vulkan", "cpu", "cuda"]
+    return [calculate_backend_coverage(db, backend) for backend in backends]

@@ -47,3 +47,17 @@ Implementation: `frontend/src/App.tsx`, `frontend/src/api/client.ts`, `frontend/
 
 Tests: `frontend/src/App.test.tsx`
 
+### multi-backend-coverage-comparison — Multi-backend coverage comparison view in dashboard
+
+Status: done
+
+Acceptance:
+- Backend API endpoint /api/coverage returns coverage for all backends (MPS, Vulkan, CPU, CUDA).
+- Frontend CoverageMatrix component includes 'Compare All Backends' toggle with side-by-side table view.
+- Visual coverage bars and color-coded rates for quick comparison.
+- All existing tests pass, new functionality type-checks and builds cleanly.
+
+Implementation: `backend/app/services/operator_catalog.py`, `backend/app/api/endpoints.py`, `frontend/src/api/client.ts`, `frontend/src/components/CoverageMatrix.tsx`
+
+Tests: `backend/tests/test_api.py`, `backend/tests/test_engine.py`, `frontend/src/App.test.tsx`
+

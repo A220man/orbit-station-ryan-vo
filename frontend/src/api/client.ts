@@ -70,6 +70,11 @@ export async function fetchCoverage(backend: string): Promise<CoverageResponse> 
   if (!res.ok) throw new Error(`Failed to fetch coverage for ${backend}`);
   return res.json();
 }
+export async function fetchAllBackendsCoverage(): Promise<CoverageResponse[]> {
+  const res = await fetch(`${API_BASE}/coverage`);
+  if (!res.ok) throw new Error('Failed to fetch coverage for all backends');
+  return res.json();
+}
 
 export async function runBenchmark(
   workload_name: string,

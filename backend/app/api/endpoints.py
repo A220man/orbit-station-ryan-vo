@@ -9,7 +9,7 @@ import json
 
 from app.models.database import get_db, OperatorRecord, BenchmarkRecord, WorkloadPlanRecord, AuditLogRecord
 from app.core.security import get_current_user, require_role, UserToken
-from app.services.operator_catalog import calculate_backend_coverage
+from app.services.operator_catalog import calculate_backend_coverage, calculate_all_backends_coverage
 from app.services.benchmark_engine import simulate_workload_execution
 from app.services.workload_planner import plan_workload_execution
 from app.services.llm_advisory import generate_fallback_analysis_advisory
@@ -179,6 +179,12 @@ def get_backend_coverage(
     user: UserToken = Depends(require_role("viewer"))
 ):
     return calculate_backend_coverage(db, backend)
+@router.get("/coverage", response_model=List[CoverageResponse])
+def get_all_backends_coverage(
+    db: Session = Depends(get_db),
+    user: UserToken = Depends(require_role("viewer"))
+):
+    return calculate_all_backends_coverage(db)
 
 @router.post("/benchmarks/run")
 def execute_benchmark(

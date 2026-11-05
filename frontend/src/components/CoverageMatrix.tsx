@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { OperatorResponse, CoverageResponse } from '../api/client';
-import { exportOperators, downloadBlob } from '../api/client';
+import { exportOperators, downloadBlob, fetchAllBackendsCoverage } from '../api/client';
 
 interface Props {
   operators: OperatorResponse[];
@@ -17,6 +17,19 @@ export const CoverageMatrix: React.FC<Props> = ({
 }) => {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [compareMode, setCompareMode] = useState(false);
+  const [allBackendsCoverage, setAllBackendsCoverage] = useState<CoverageResponse[]>([]);
+  const [loadingComparison, setLoadingComparison] = useState(false);
+
+  useEffect(() => {
+    if (compareMode && allBackendsCoverage.length === 0) {
+      setLoadingComparison(true);
+      fetchAllBackendsCoverage()
+        .then(setAllBackendsCoverage)
+        .catch(console.error)
+        .finally(() => setLoadingComparison(false));
+    }
+  }, [compareMode, allBackendsCoverage.length]);
 
   const filtered = operators.filter((op) => {
     const matchesSearch = op.op_name.toLowerCase().includes(search.toLowerCase());
@@ -36,6 +49,92 @@ export const CoverageMatrix: React.FC<Props> = ({
   };
 
   const categories = Array.from(new Set(operators.map((o) => o.category)));
+
+  const getBackendColor = (rate: number) => {
+    if (rate >= 75) return 'var(--success)';
+    if (rate >= 50) return 'var(--warning)';
+    return 'var(--danger)';
+  };
+
+  if (compareMode) {
+    return (
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div>
+            <h2 style={{ margin: 0 }}>Backend Coverage Comparison</h2>
+            <p style={{ color: 'var(--text-muted)', margin: '0.25rem 0 0 0' }}>
+              Side-by-side comparison of operator coverage across all hardware backends
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <button
+              onClick={() => setCompareMode(false)}
+              style={{ background: '#334155', color: '#f8fafc', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.85rem' }}
+            >
+              Back to Detailed View
+            </button>
+          </div>
+        </div>
+
+        {loadingComparison && (
+          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+            Loading backend coverage data...
+          </div>
+        )}
+
+        {!loadingComparison && allBackendsCoverage.length > 0 && (
+          <div style={{ overflowX: 'auto' }}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Backend</th>
+                  <th>Coverage Rate</th>
+                  <th>Total Operators</th>
+                  <th>Supported</th>
+                  <th>Fallback</th>
+                  <th>Missing</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allBackendsCoverage.map((cov) => (
+                  <tr key={cov.backend}>
+                    <td style={{ fontWeight: 600, textTransform: 'uppercase' }}>{cov.backend}</td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: getBackendColor(cov.coverage_rate) }}>
+                          {cov.coverage_rate}%
+                        </div>
+                        <div style={{ width: '100px', height: '8px', background: '#1e293b', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div
+                            style={{
+                              width: `${cov.coverage_rate}%`,
+                              height: '100%',
+                              background: getBackendColor(cov.coverage_rate),
+                              transition: 'width 0.3s ease',
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td>{cov.total_operators}</td>
+                    <td style={{ color: 'var(--success)' }}>{cov.supported}</td>
+                    <td style={{ color: 'var(--warning)' }}>{cov.fallback}</td>
+                    <td style={{ color: 'var(--danger)' }}>{cov.missing}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {!loadingComparison && allBackendsCoverage.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+            No coverage data available.
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="card">
@@ -72,6 +171,12 @@ export const CoverageMatrix: React.FC<Props> = ({
             style={{ background: '#334155', color: '#f8fafc', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.85rem' }}
           >
             Export CSV
+          </button>
+          <button
+            onClick={() => setCompareMode(true)}
+            style={{ background: '#1e293b', color: '#f8fafc', border: '1px solid var(--border-color)', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.85rem' }}
+          >
+            Compare All Backends
           </button>
           <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Target Backend:</label>
           <select value={selectedBackend} onChange={(e) => onSelectBackend(e.target.value)}>
@@ -156,3 +261,4 @@ export const CoverageMatrix: React.FC<Props> = ({
     </div>
   );
 };
+
