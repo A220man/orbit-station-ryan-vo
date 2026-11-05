@@ -1,6 +1,20 @@
 # Changelog
 
+## 1.5.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.4.0 — work-in-progress checkpoint
+
+### Added
+- New `/api/coverage` endpoint returning aggregate operator coverage across all backends (MPS, Vulkan, CPU, CUDA).
+- Frontend "Compare All Backends" view in CoverageMatrix with side-by-side table, visual progress bars, and color-coded coverage rates.
+- `calculate_all_backends_coverage()` service function in operator_catalog.
+
+### Changed
+- Enhanced CoverageMatrix component with toggle between detailed single-backend and comparison views.
+
+Partial code published for continued development. Known issues: STATUS.md.
 
 Partial code published for continued development. Known issues: STATUS.md.
 
