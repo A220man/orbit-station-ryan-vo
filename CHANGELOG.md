@@ -1,8 +1,18 @@
 # Changelog
 
-## 1.5.0 — work-in-progress checkpoint
+## 1.6.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+## 1.5.0 — work-in-progress checkpoint
+
+### Added
+- New BenchmarkHistory component in the React dashboard displaying past benchmark simulations in a sortable, filterable table.
+- Color-coded backend badges (MPS, CUDA, Vulkan, CPU) with replication warnings for DataLoader multiprocessing memory issues.
+- Configurable result limit (10/20/50/100) and manual refresh capability.
+- Export to JSON and CSV via existing `/api/benchmarks/export` endpoints.
+- `fetchBenchmarkHistory()` function in frontend API client consuming `/api/benchmarks/history` backend endpoint.
+- All 33 backend tests and 3 frontend tests continue to pass.
 
 ## 1.4.0 — work-in-progress checkpoint
 
