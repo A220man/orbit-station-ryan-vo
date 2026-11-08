@@ -61,3 +61,19 @@ Implementation: `backend/app/services/operator_catalog.py`, `backend/app/api/end
 
 Tests: `backend/tests/test_api.py`, `backend/tests/test_engine.py`, `frontend/src/App.test.tsx`
 
+### benchmark-history-view — Benchmark history and comparison view in dashboard
+
+Status: in_progress
+
+Acceptance:
+- Frontend BenchmarkHistory component displays past benchmark runs in a sortable, filterable table.
+- Shows workload name, backend, batch size, workers, latency percentiles, throughput, peak memory, replication flag, and efficiency.
+- Color-coded backend badges and replication warnings for quick visual scanning.
+- Configurable result limit (10/20/50/100) with refresh button.
+- Export to JSON and CSV via existing export endpoints.
+- All existing tests pass, new component type-checks and renders without errors.
+
+Implementation: `frontend/src/components/BenchmarkHistory.tsx`, `frontend/src/api/client.ts`, `frontend/src/App.tsx`
+
+Tests: `frontend/src/App.test.tsx`, `backend/tests/test_api.py`
+

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CoverageMatrix } from './components/CoverageMatrix';
 import { BenchmarkRunner } from './components/BenchmarkRunner';
 import { WorkloadPlannerView } from './components/WorkloadPlannerView';
+import { BenchmarkHistory } from './components/BenchmarkHistory';
 import { fetchOperators, fetchCoverage, OperatorResponse, CoverageResponse } from './api/client';
 
 export const App: React.FC = () => {
@@ -21,8 +22,9 @@ export const App: React.FC = () => {
       ]);
       setOperators(opsData);
       setCoverage(covData);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load system data');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to load system data';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -74,6 +76,8 @@ export const App: React.FC = () => {
             <BenchmarkRunner />
             <WorkloadPlannerView />
           </div>
+
+          <BenchmarkHistory />
         </>
       )}
 
