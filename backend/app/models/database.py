@@ -38,6 +38,7 @@ class BenchmarkRecord(Base):
     peak_memory_mb = Column(Float, nullable=False)
     replicated_memory_detected = Column(Boolean, default=False)
     executed_by = Column(String(128), default="system")
+    hardware_acceleration_efficiency = Column(Float, default=0.0)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 class WorkloadPlanRecord(Base):

@@ -74,6 +74,7 @@ export async function fetchAllBackendsCoverage(): Promise<CoverageResponse[]> {
   const res = await fetch(`${API_BASE}/coverage`);
   if (!res.ok) throw new Error('Failed to fetch coverage for all backends');
   return res.json();
+}
 
 export async function fetchBenchmarkHistory(limit: number = 20): Promise<BenchmarkResult[]> {
   const res = await fetch(`${API_BASE}/benchmarks/history?limit=${limit}`);
@@ -147,3 +148,4 @@ export function downloadBlob(blob: Blob, filename: string): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
