@@ -67,6 +67,7 @@ def simulate_workload_execution(
             throughput_samples_per_sec=throughput,
             peak_memory_mb=total_memory,
             replicated_memory_detected=replicated,
+            hardware_acceleration_efficiency=result["hardware_acceleration_efficiency"],
             executed_by=actor
         )
         db.add(record)
