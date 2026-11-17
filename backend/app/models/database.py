@@ -32,6 +32,7 @@ class BenchmarkRecord(Base):
     workload_name = Column(String(128), index=True, nullable=False)
     backend = Column(String(32), index=True, nullable=False)
     batch_size = Column(Integer, nullable=False)
+    num_workers = Column(Integer, default=0, nullable=False)
     mean_latency_ms = Column(Float, nullable=False)
     p95_latency_ms = Column(Float, nullable=False)
     throughput_samples_per_sec = Column(Float, nullable=False)
