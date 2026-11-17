@@ -64,6 +64,7 @@ def simulate_workload_execution(
             batch_size=batch_size,
             mean_latency_ms=mean_latency,
             p95_latency_ms=p95_latency,
+            num_workers=num_workers,
             throughput_samples_per_sec=throughput,
             peak_memory_mb=total_memory,
             replicated_memory_detected=replicated,
