@@ -6,13 +6,40 @@ export const BenchmarkHistory: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [limit, setLimit] = useState(20);
+  const [sortBy, setSortBy] = useState<'workload_name' | 'backend' | 'batch_size' | 'num_workers' | 'mean_latency_ms' | 'p95_latency_ms' | 'throughput_samples_per_sec' | 'peak_memory_mb' | 'hardware_acceleration_efficiency'>('workload_name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const loadHistory = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchBenchmarkHistory(limit);
-      setHistory(data);
+      const params = new URLSearchParams();
+      params.append('limit', String(limit));
+      if (sortBy) {
+        params.append('sortBy', sortBy);
+      }
+      params.append('sortDir', sortDir);
+      const res = await fetch(`${API_BASE}/benchmarks/history?${params.toString()}`);
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.detail || 'Failed to load benchmark history');
+      }
+      const data = await res.json();
+      // Client-side sort
+      const sorted = [...data].sort((a, b) => {
+        const aVal = a[sortBy];
+        const bVal = b[sortBy];
+        if (aVal === null || aVal === undefined) return 1;
+        if (bVal === null || bVal === undefined) return -1;
+        const aNum = typeof aVal === 'number' ? aVal : String(aVal).toLowerCase();
+        const bNum = typeof bVal === 'number' ? bVal : String(bVal).toLowerCase();
+        if (sortDir === 'asc') {
+          return aNum > bNum ? 1 : -1;
+        } else {
+          return aNum < bNum ? 1 : -1;
+        }
+      });
+      setHistory(sorted);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to load benchmark history';
       setError(message);
@@ -23,7 +50,7 @@ export const BenchmarkHistory: React.FC = () => {
 
   useEffect(() => {
     loadHistory();
-  }, [limit]);
+  }, [limit, sortBy, sortDir]);
 
   const getBackendColor = (backend: string) => {
     switch (backend) {
@@ -97,19 +124,66 @@ export const BenchmarkHistory: React.FC = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--border-color)', textAlign: 'left' }}>
-                <th style={{ padding: '0.75rem' }}>#</th>
-                <th style={{ padding: '0.75rem' }}>Workload</th>
-                <th style={{ padding: '0.75rem' }}>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'workload_name' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by workload name">
+                  Workload
+                </th>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'backend' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by backend">
                   <span style={{ color: 'var(--accent)' }}>●</span> Backend
                 </th>
-                <th style={{ padding: '0.75rem' }}>Batch</th>
-                <th style={{ padding: '0.75rem' }}>Workers</th>
-                <th style={{ padding: '0.75rem' }}>Latency (ms)</th>
-                <th style={{ padding: '0.75rem' }}>P95 (ms)</th>
-                <th style={{ padding: '0.75rem' }}>Throughput (samples/s)</th>
-                <th style={{ padding: '0.75rem' }}>Peak Memory (MB)</th>
-                <th style={{ padding: '0.75rem' }}>Replication</th>
-                <th style={{ padding: '0.75rem' }}>Efficiency (%)</th>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'batch_size' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by batch size">
+                  Batch
+                </th>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'num_workers' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by num workers">
+                  Workers
+                </th>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'mean_latency_ms' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by mean latency">
+                  Latency (ms)
+                </th>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'p95_latency_ms' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by p95 latency">
+                  P95 (ms)
+                </th>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'throughput_samples_per_sec' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by throughput">
+                  Throughput (samples/s)
+                </th>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'peak_memory_mb' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by peak memory">
+                  Peak Memory (MB)
+                </th>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'replicated_memory_detected' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by replication">
+                  Replication
+                </th>
+                <th
+                  style={{ padding: '0.75rem', cursor: sortBy === 'hardware_acceleration_efficiency' ? 'pointer' : 'default' }}
+                  onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+                  title="Sort by efficiency">
+                  Efficiency (%)
+                </th>
               </tr>
             </thead>
             <tbody>

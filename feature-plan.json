@@ -88,12 +88,11 @@
         "backend/tests/test_engine.py",
         "frontend/src/App.test.tsx"
       ]
-    }
-,
+    },
     {
       "id": "benchmark-history-view",
       "title": "Benchmark history and comparison view in dashboard",
-      "status": "in_progress",
+      "status": "done",
       "acceptance": [
         "Frontend BenchmarkHistory component displays past benchmark runs in a sortable, filterable table.",
         "Shows workload name, backend, batch size, workers, latency percentiles, throughput, peak memory, replication flag, and efficiency.",
@@ -114,4 +113,3 @@
     }
   ]
 }
-

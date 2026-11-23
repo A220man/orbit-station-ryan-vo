@@ -63,7 +63,7 @@ Tests: `backend/tests/test_api.py`, `backend/tests/test_engine.py`, `frontend/sr
 
 ### benchmark-history-view — Benchmark history and comparison view in dashboard
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - Frontend BenchmarkHistory component displays past benchmark runs in a sortable, filterable table.
