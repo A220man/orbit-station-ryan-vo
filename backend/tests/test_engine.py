@@ -69,6 +69,47 @@ def test_workload_planner_with_fallbacks(test_db):
     assert plan["fallback_ops_count"] == 2
     assert plan["coverage_score"] == 33.33
 
+
+
+def test_coverage_rate_calculation(test_db):
+    """Verify coverage rate calculation is correct for various operator statuses."""
+    # Test with the default operators loaded by the fixture
+    # Default operators have: 12 supported, 0 fallback, 3 missing on mps -> rate = (12 + 0) / 15 * 100 = 80.0
+    cov_default = calculate_backend_coverage(test_db, "mps")
+    assert cov_default["total_operators"] == 15
+    assert cov_default["supported"] == 12
+    assert cov_default["fallback"] == 0
+    assert cov_default["missing"] == 3
+    assert cov_default["coverage_rate"] == 80.0
+
+    # Test invalid backend raises ValueError
+    try:
+        calculate_backend_coverage(test_db, "tpu")
+        assert False, "Expected ValueError for invalid backend"
+    except ValueError as e:
+        assert "tpu" in str(e)
+
+    # Test valid backends all work
+    cov_mps = calculate_backend_coverage(test_db, "mps")
+    assert cov_mps["backend"] == "mps"
+    cov_cuda = calculate_backend_coverage(test_db, "cuda")
+    assert cov_cuda["backend"] == "cuda"
+    cov_cpu = calculate_backend_coverage(test_db, "cpu")
+    assert cov_cpu["backend"] == "cpu"
+    cov_vulkan = calculate_backend_coverage(test_db, "vulkan")
+    assert cov_vulkan["backend"] == "vulkan"
+
+    # Verify rate formula: (supported + 0.5 * fallback) / total * 100
+    # With default operators: (12 + 0.5 * 0) / 15 * 100 = 80.0
+    assert cov_mps["coverage_rate"] == 80.0
+
+    # Test with vulkan: default operators have 4 supported, 1 fallback, 10 missing on vulkan
+    # rate = (4 + 0.5 * 1) / 15 * 100 = 30.0
+    cov_vul = calculate_backend_coverage(test_db, "vulkan")
+    assert cov_vul["coverage_rate"] == 30.0
+    assert cov_vul["supported"] == 4
+    assert cov_vul["fallback"] == 1
+    assert cov_vul["missing"] == 10
 def test_deterministic_llm_advisory_offline():
     workload = {
         "title": "Vision-Model",

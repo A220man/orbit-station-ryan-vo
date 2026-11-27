@@ -149,6 +149,28 @@ def seed_operator_catalog(db: Session):
         db.commit()
 
 def calculate_backend_coverage(db: Session, backend: str) -> Dict[str, Any]:
+    """Calculate operator coverage for a given backend.
+
+    Args:
+        db: SQLAlchemy session with OperatorRecord table populated.
+        backend: Target backend identifier. Must be one of "mps", "vulkan", "cpu", or "cuda".
+
+    Returns:
+        Dict with coverage metrics:
+        - backend: The target backend string.
+        - total_operators: Total number of operators in the catalog.
+        - supported: Count of operators with "supported" status.
+        - fallback: Count of operators with "fallback" status.
+        - missing: Count of operators with missing status.
+        - coverage_rate: Percentage coverage, weighted: (supported + 0.5 * fallback) / total * 100.
+
+    The coverage_rate formula weights fallback operators at half value,
+    reflecting that they can execute via CPU fallback but with potential
+    synchronization overhead.
+
+    Raises:
+        ValueError: If backend is not one of "mps", "vulkan", "cpu", "cuda".
+    """
     records = db.query(OperatorRecord).all()
     total = len(records)
     if total == 0:
@@ -158,13 +180,18 @@ def calculate_backend_coverage(db: Session, backend: str) -> Dict[str, Any]:
     fallback_count = 0
     missing_count = 0
 
+    valid_backends = {"mps", "vulkan", "cpu", "cuda"}
+    if backend.lower() not in valid_backends:
+        raise ValueError(
+            f"Invalid backend '{backend}'. Must be one of {sorted(valid_backends)}"
+        )
     col_map = {
         "mps": "mps_status",
         "vulkan": "vulkan_status",
         "cpu": "cpu_status",
         "cuda": "cuda_status"
     }
-    col_attr = col_map.get(backend.lower(), "cpu_status")
+    col_attr = col_map[backend.lower()]
 
     for r in records:
         status_val = getattr(r, col_attr)
